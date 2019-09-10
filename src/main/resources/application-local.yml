@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: spring-kafka
+
+  # redis数据库（默认为0）
+  redis:
+    database: 0
+    # Redis服务器地址
+    host: localhost
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password:
+    # 连接池最大连接数（使用负值表示没有限制）
+    pool.max-active: 8
+    # 连接池最大阻塞等待时间（使用负值表示没有限制）
+    pool.max-wait: -1
+    # 连接池中的最大空闲连接
+    pool.max-idle: 8
+    # 连接池中的最小空闲连接
+    pool.min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 0
+
+  kafka:
+    bootstrap-servers: 192.168.6.181:9092
+#    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: test-consumer-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: com.demo.kafka.entity
+
+
+security:
+  basic:
+    enabled: false
+
+eureka:
+  client:
+#    registryFetchIntervalSeconds: 5
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+#    leaseRenewalIntervalInSeconds: 10
+#    health-check-url-path: /swagger-ui.html
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    status-page-url: http://${spring.cloud.client.ip-address}:${server.port}/swagger-ui.html
+
+#日志配置
+logging:
+  level:
+    com.netflix: info
+    org.hibernate: info
+    org.apache: info
+    springfox: off
+
+# hystrix 线程策略，次可以访问到父线程的上下文
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          strategy: SEMAPHORE
+          thread:
+            timeoutInMilliseconds: 300000
+ribbon:
+  ReadTimeout: 300000
+  ConnectTimeout: 300000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
