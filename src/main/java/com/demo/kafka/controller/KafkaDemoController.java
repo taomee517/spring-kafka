@@ -28,7 +28,6 @@ public class KafkaDemoController {
     @ApiOperation(value = "生产消息")
     public void produce(@RequestBody Device device){
         try {
-            //JSON.toJSONString(device)
             ListenableFuture<SendResult> future = kafkaTemplate.send(TOPIC, device);
             future.addCallback(success -> log.info("KafkaMessageProducer 发送消息成功！"),
                     fail -> log.error("KafkaMessageProducer 发送消息失败！"));

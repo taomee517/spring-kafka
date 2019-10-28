@@ -20,11 +20,10 @@ spring:
     # 连接池中的最小空闲连接
     pool.min-idle: 0
     # 连接超时时间（毫秒）
-    timeout: 0
+    timeout: 5000
 
   kafka:
-    bootstrap-servers: 192.168.6.181:9092
-#    bootstrap-servers: 127.0.0.1:9092
+    bootstrap-servers: 127.0.0.1:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
