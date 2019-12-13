@@ -7,7 +7,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableSwagger2
 public class KafkaApplication {
 
     public static void main(String[] args) {

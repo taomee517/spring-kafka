@@ -21,5 +21,11 @@ public class Device implements Serializable {
     private String imei;
 
     /**设备类型*/
-    private String type;
+    private Integer clientType;
+
+    /**事件类型*/
+    private DeviceEventEnum event;
+
+    /**设备必要的参数,JSON格式*/
+    private String paras;
 }

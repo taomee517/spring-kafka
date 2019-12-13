@@ -1,7 +1,6 @@
 package com.demo.kafka.controller;
 
 
-import com.alibaba.fastjson.JSON;
 import com.demo.kafka.entity.Device;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,9 +27,12 @@ public class KafkaDemoController {
     @ApiOperation(value = "生产消息")
     public void produce(@RequestBody Device device){
         try {
+            long start = System.currentTimeMillis();
             ListenableFuture<SendResult> future = kafkaTemplate.send(TOPIC, device);
             future.addCallback(success -> log.info("KafkaMessageProducer 发送消息成功！"),
                     fail -> log.error("KafkaMessageProducer 发送消息失败！"));
+            long end = System.currentTimeMillis();
+            log.info("kafka写入速度为：{}",end-start);
         } catch (Exception e) {
             log.error("生产消息发生异常:{}", e);
         }
