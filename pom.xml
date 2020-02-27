@@ -19,6 +19,7 @@
         <swagger.version>2.7.0</swagger.version>
         <lombok.version>1.16.22</lombok.version>
         <fastjson-version>1.2.54</fastjson-version>
+        <protostuff.version>1.6.0</protostuff.version>
         <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
     </properties>
 
@@ -84,6 +85,16 @@
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-core</artifactId>
+            <version>${protostuff.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.protostuff</groupId>
+            <artifactId>protostuff-runtime</artifactId>
+            <version>${protostuff.version}</version>
         </dependency>
     </dependencies>
 

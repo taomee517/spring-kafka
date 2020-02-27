@@ -37,37 +37,39 @@ spring:
           json:
             trusted:
               packages: com.demo.kafka.entity
+    mix:
+      group-id: mix-group
 
 
-#security:
-#  basic:
-#    enabled: false
-#
-#eureka:
-#  client:
-##    registryFetchIntervalSeconds: 5
-#    service-url:
-#      defaultZone: http://localhost:8761/eureka/
-#  instance:
-##    leaseRenewalIntervalInSeconds: 10
-##    health-check-url-path: /swagger-ui.html
-#    prefer-ip-address: true
-#    instance-id: ${spring.cloud.client.ip-address}:${server.port}
-#    status-page-url: http://${spring.cloud.client.ip-address}:${server.port}/swagger-ui.html
-
-  security:
-    user:
-      name: admin
-      password: admin123
+security:
+  basic:
+    enabled: false
 
 eureka:
   client:
+#    registryFetchIntervalSeconds: 5
     service-url:
-      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@127.0.0.1:8761/eureka/
+      defaultZone: http://localhost:8761/eureka/
   instance:
+#    leaseRenewalIntervalInSeconds: 10
+#    health-check-url-path: /swagger-ui.html
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ipaddress}:${server.port}
-    status-page-url: http://${spring.cloud.client.ipaddress}:${server.port}/swagger-ui.html
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+    status-page-url: http://${spring.cloud.client.ip-address}:${server.port}/swagger-ui.html
+
+#  security:
+#    user:
+#      name: admin
+#      password: admin123
+#
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@127.0.0.1:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#    instance-id: ${spring.cloud.client.ipaddress}:${server.port}
+#    status-page-url: http://${spring.cloud.client.ipaddress}:${server.port}/swagger-ui.html
 
 #日志配置
 logging:
