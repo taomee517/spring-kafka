@@ -1,26 +1,19 @@
 package com.demo.kafka.config;
 
-import com.demo.kafka.seriealizer.DeviceProtoDeserializer;
-import com.demo.kafka.seriealizer.DeviceProtoSerializer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class DeviceKafkaJsonConfig {
+public class JsonProducerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String brokers;
@@ -40,20 +33,18 @@ public class DeviceKafkaJsonConfig {
     }
 
 
-    @Bean("jsonProduceFactory")
-    public DefaultKafkaProducerFactory produceFactory(){
+    public DefaultKafkaProducerFactory jsonProduceFactory(){
         return new DefaultKafkaProducerFactory(producerProperties());
     }
 
 
     /**
      * 不使用spring boot的KafkaAutoConfiguration默认方式创建的KafkaTemplate，重新定义
-     * @param jsonProduceFactory
      * @return
      */
     @Bean(name = "jsonKafka")
-    public KafkaTemplate kafkaTemplate(DefaultKafkaProducerFactory jsonProduceFactory){
-        return new KafkaTemplate(jsonProduceFactory);
+    public KafkaTemplate kafkaTemplate(){
+        return new KafkaTemplate(jsonProduceFactory());
     }
 
 

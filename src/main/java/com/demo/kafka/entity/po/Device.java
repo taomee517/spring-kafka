@@ -1,4 +1,4 @@
-package com.demo.kafka.entity;
+package com.demo.kafka.entity.po;
 
 import lombok.Data;
 import lombok.experimental.Accessors;

@@ -1,4 +1,4 @@
-package com.demo.kafka.entity;
+package com.demo.kafka.entity.po;
 
 public enum DeviceEventEnum {
     /**登录事件*/

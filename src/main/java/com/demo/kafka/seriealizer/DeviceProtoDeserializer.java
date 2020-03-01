@@ -1,7 +1,6 @@
 package com.demo.kafka.seriealizer;
 
-import com.alibaba.fastjson.JSON;
-import com.demo.kafka.entity.Device;
+import com.demo.kafka.entity.po.Device;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Deserializer;
 
@@ -21,16 +20,13 @@ public class DeviceProtoDeserializer implements Deserializer<Device> {
 
         try {
             device = ProtobufSerializingUtil.deserialize(bytes,Device.class);
-            return device;
         } catch (Exception e) {
             log.error("protobuf 反序列化发生异常：{}", e);
-//            JsonDeserializer<Device> deviceJsonDeserializer = new JsonDeserializer<>();
-//            device = deviceJsonDeserializer.deserialize(s,bytes);
-            String data = new String(bytes);
-            device = JSON.parseObject(data,Device.class);
-            log.info("改用json反序列化结果： device = {}", device);
-            return device;
+//            String data = new String(bytes);
+//            device = JSON.parseObject(data,Device.class);
+//            log.info("改用json反序列化结果： device = {}", device);
         }
+        return device;
 
     }
 
