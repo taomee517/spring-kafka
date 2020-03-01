@@ -3,6 +3,7 @@ package com.demo.kafka.controller;
 
 import com.demo.kafka.constants.SerializingType;
 import com.demo.kafka.constants.TopicEnum;
+import com.demo.kafka.entity.dto.DeviceParallelPublishDTO;
 import com.demo.kafka.entity.dto.DevicePublishDTO;
 import com.demo.kafka.entity.po.Device;
 import io.swagger.annotations.Api;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.*;
 
 @Slf4j
 @RestController
@@ -63,6 +66,63 @@ public class DeviceProduceController {
             }
             future.addCallback(success -> log.info("KafkaMessageProducer 发送消息成功！"),
                     fail -> log.error("KafkaMessageProducer 发送消息失败！"));
+        } catch (Exception e) {
+            log.error("生产消息发生异常:{}", e);
+        }
+    }
+
+
+
+    @PostMapping(value = "parallel")
+    @ApiOperation(value = "批量生产消息")
+    public void parallelProduce(@RequestBody @Validated DeviceParallelPublishDTO dto, BindingResult bindingResult){
+        try {
+            if(bindingResult.hasErrors()){
+                log.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
+                return;
+            }
+
+            TopicEnum topicType = dto.getTopic();
+            String topic = topicType.getTopic();
+            Device device = new Device();
+            BeanUtils.copyProperties(dto,device);
+            CountDownLatch countDownLatch = new CountDownLatch(dto.getPublishTimes());
+            ScheduledThreadPoolExecutor schecdule = new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
+            ScheduledFuture scheduledFuture = schecdule.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    ListenableFuture<SendResult> future = null;
+                    SerializingType serializingType = dto.getSerializingType();
+                    Long latchCount = countDownLatch.getCount();
+                    int intLatchCount = latchCount.intValue();
+                    int index = dto.getPublishTimes() - intLatchCount + 1;
+                    device.setParas(Integer.toString(index));
+                    switch (serializingType){
+                        case JSON:
+                            future = jsonKafka.send(topic,device);
+                            break;
+                        case PROTOBUF:
+                            future = protoKafka.send(topic,device);
+                            break;
+                        default:
+                            log.error("暂不支持的序列化方式");
+                            break;
+                    }
+                    future.addCallback(
+                        success -> {
+                            countDownLatch.countDown();
+                            log.info("KafkaMessageProducer 发送消息成功！ index = {}", index);
+                        },
+                        fail -> {
+                            log.error("KafkaMessageProducer 发送消息失败！");
+                        }
+                    );
+                }
+            },0, dto.getPublishInterval(), TimeUnit.MILLISECONDS);
+            if(countDownLatch.await(dto.getPublishInterval() * dto.getPublishTimes()*2, TimeUnit.MILLISECONDS)){
+                scheduledFuture.cancel(true);
+                log.info("所有消息发布完成！");
+            }
         } catch (Exception e) {
             log.error("生产消息发生异常:{}", e);
         }
