@@ -18,10 +18,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController(value = "/deviceProducer")
+@RestController
+@RequestMapping(value = "/deviceProducer")
 @Api(tags = "设备通用发布接口", value = "DeviceProduceController")
 public class DeviceProduceController {
 
@@ -33,7 +35,7 @@ public class DeviceProduceController {
     @Qualifier("jsonKafka")
     private KafkaTemplate jsonKafka;
 
-    @PostMapping(value = "commonProduce")
+    @PostMapping(value = "produce")
     @ApiOperation(value = "生产消息")
     public void produce(@RequestBody @Validated  DevicePublishDTO dto, BindingResult bindingResult){
         try {

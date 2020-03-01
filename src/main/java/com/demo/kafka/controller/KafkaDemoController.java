@@ -13,10 +13,12 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@RestController(value = "/kafka")
+@RestController
+@RequestMapping(value = "/kafkaProducer")
 @Api(tags = "Kafka测试", value = "KafkaDemoController")
 public class KafkaDemoController {
 
