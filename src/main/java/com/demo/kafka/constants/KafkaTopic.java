@@ -6,4 +6,6 @@ public class KafkaTopic {
     public static final String JSON_TEST_TOPIC = "json-test";
 
     public static final String PROTOBUF_TEST_TOPIC = "protobuf-test";
+
+    public static final String PARALLEL_TEST_TOPIC = "parallel-test";
 }

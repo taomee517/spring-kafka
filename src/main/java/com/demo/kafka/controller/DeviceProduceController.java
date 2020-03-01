@@ -108,9 +108,9 @@ public class DeviceProduceController {
                             log.error("暂不支持的序列化方式");
                             break;
                     }
+                    countDownLatch.countDown();
                     future.addCallback(
                         success -> {
-                            countDownLatch.countDown();
                             log.info("KafkaMessageProducer 发送消息成功！ index = {}", index);
                         },
                         fail -> {
@@ -119,10 +119,18 @@ public class DeviceProduceController {
                     );
                 }
             },0, dto.getPublishInterval(), TimeUnit.MILLISECONDS);
-            if(countDownLatch.await(dto.getPublishInterval() * dto.getPublishTimes()*2, TimeUnit.MILLISECONDS)){
-                scheduledFuture.cancel(true);
-                log.info("所有消息发布完成！");
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        countDownLatch.await();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    scheduledFuture.cancel(true);
+                    log.info("{}条消息全部发布成功！", dto.getPublishTimes());
+                }
+            }).start();
         } catch (Exception e) {
             log.error("生产消息发生异常:{}", e);
         }

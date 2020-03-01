@@ -1,5 +1,6 @@
 package com.demo.kafka.consumer;
 
+import com.demo.kafka.constants.KafkaTopic;
 import com.demo.kafka.entity.po.Device;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -7,16 +8,18 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.*;
-
-import static com.demo.kafka.constants.KafkaTopic.PROTOBUF_TEST_TOPIC;
-
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-public class ProtoDeviceConsumer {
+public class ParallelTaskConsumer{
+
     /**
      * 创建了一个最大容量为20的线程池，其中有两个参数需要注意一下:
      *  1. 我们使用了了零容量的SynchronousQueue，一进一出，避免队列里缓冲数据，这样在系统异常关闭时，就能排除因为阻塞队列丢消息的可能。
@@ -25,7 +28,7 @@ public class ProtoDeviceConsumer {
      * 由于是线程池认领了这些任务，顺序性是无法保证的，可能有些任务没有执行完毕，后面的任务就已经把它的offset给提交了。
      *
      */
-    private static Executor executor = new ThreadPoolExecutor(
+    private static ThreadPoolExecutor executor = new ThreadPoolExecutor(
             5,
             20,
             10,
@@ -34,25 +37,36 @@ public class ProtoDeviceConsumer {
             new ThreadPoolExecutor.CallerRunsPolicy()
     );
 
-    @KafkaListener(topics={PROTOBUF_TEST_TOPIC}, containerFactory = "mixProtoConsumerFactory", groupId = "proto-device")
-    public void listen(ConsumerRecord<String,Device> record, Acknowledgment ack){
-//        log.info("收到proto-device消息：record = {}", record);
+
+    @KafkaListener(topics={KafkaTopic.PARALLEL_TEST_TOPIC}, containerFactory = "parallelConsumerFactory", groupId = "parallel-group")
+    public void listen(List<ConsumerRecord<String,Device>> records, Acknowledgment ack){
         if (Objects.nonNull(ack)) {
             ack.acknowledge();
         }
-        Optional<?> kmsg = Optional.ofNullable(record.value());
-        if(kmsg.isPresent()){
-            CompletableFuture.runAsync(new Runnable() {
-                @Override
-                public void run() {
-                    handleLoginEvent(record);
-                }
-            }, executor);
+
+//        CompletableFuture.runAsync(new Runnable() {
+//            @Override
+//            public void run() {
+//                processEachRecord(record);
+//            }
+//        }, executor);
+
+        if (records.size() > 0) {
+            Iterator<ConsumerRecord<String, Device>> iterator = records.iterator();
+            while (iterator.hasNext()) {
+                ConsumerRecord record = iterator.next();
+                CompletableFuture.runAsync(new Runnable() {
+                    @Override
+                    public void run() {
+                        processEachRecord(record);
+                    }
+                }, executor);
+            }
         }
     }
 
 
-    private void handleLoginEvent(ConsumerRecord<String,Device> record){
+    void processEachRecord(ConsumerRecord<String,Device> record){
         Device device = record.value();
 //        log.info("收到proto-device消息：device = {}", device);
         long now = System.currentTimeMillis();
@@ -63,12 +77,14 @@ public class ProtoDeviceConsumer {
             return;
         }
         try {
-            //每个业务处理耗时 1 秒
-            Thread.sleep(1000);
+            //每个业务处理耗时 2 秒
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         log.info("设备上线,相关业务处理完成：device = {}", device);
     }
+
+
 
 }

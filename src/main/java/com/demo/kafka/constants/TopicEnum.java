@@ -2,11 +2,14 @@ package com.demo.kafka.constants;
 
 import lombok.Getter;
 
+import static com.demo.kafka.constants.KafkaTopic.*;
+
 @Getter
 public enum  TopicEnum {
-    MIX(KafkaTopic.MIX_TEST_TOPIC),
-    JSON(KafkaTopic.JSON_TEST_TOPIC),
-    PROTOBUF(KafkaTopic.PROTOBUF_TEST_TOPIC);
+    MIX(MIX_TEST_TOPIC),
+    JSON(JSON_TEST_TOPIC),
+    PROTOBUF(PROTOBUF_TEST_TOPIC),
+    PARALLEL(PARALLEL_TEST_TOPIC);
 
 
     private String topic;
