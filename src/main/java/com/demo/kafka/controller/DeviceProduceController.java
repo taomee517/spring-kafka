@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController(value = "/deviceProducer")
-@Api(tags = "设备通用发布接口", description = "DeviceProduceController")
+@Api(tags = "设备通用发布接口", value = "DeviceProduceController")
 public class DeviceProduceController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class DeviceProduceController {
     @Qualifier("jsonKafka")
     private KafkaTemplate jsonKafka;
 
-    @PostMapping(value = "produce")
+    @PostMapping(value = "commonProduce")
     @ApiOperation(value = "生产消息")
     public void produce(@RequestBody @Validated  DevicePublishDTO dto, BindingResult bindingResult){
         try {

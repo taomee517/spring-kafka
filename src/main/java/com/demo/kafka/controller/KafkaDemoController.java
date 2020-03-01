@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController(value = "/kafka")
-@Api(tags = "Kafka测试", description = "KafkaDemoController")
+@Api(tags = "Kafka测试", value = "KafkaDemoController")
 public class KafkaDemoController {
 
     @Autowired
