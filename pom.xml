@@ -20,6 +20,7 @@
         <lombok.version>1.16.22</lombok.version>
         <fastjson-version>1.2.54</fastjson-version>
         <protostuff.version>1.6.0</protostuff.version>
+        <poi-version>3.9</poi-version>
         <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
     </properties>
 
@@ -95,6 +96,19 @@
             <groupId>io.protostuff</groupId>
             <artifactId>protostuff-runtime</artifactId>
             <version>${protostuff.version}</version>
+        </dependency>
+
+        <!-- office文档组件 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi-version}</version>
         </dependency>
     </dependencies>
 
