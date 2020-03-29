@@ -10,9 +10,6 @@ public class EventBusParallelPublishDTO {
     @NotNull(message = "主题不能为空！")
     private String topic;
 
-    @NotNull(message = "事件类型不能为空！")
-    private DeviceEventEnum event;
-
     @NotNull(message = "设备类型不能为空！")
     private Integer clientType;
 
@@ -22,5 +19,6 @@ public class EventBusParallelPublishDTO {
     @NotNull(message = "发布次数不能为空！")
     private Integer totalCount;
 
+    private DeviceEventEnum event;
     private Integer publishInterval = 100;
 }

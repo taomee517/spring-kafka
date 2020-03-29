@@ -9,5 +9,6 @@ public class EventBus implements Serializable {
     private DeviceEventEnum event;
     private Integer clientType;
     private String imei;
+    private Long timestamp;
     private String param;
 }

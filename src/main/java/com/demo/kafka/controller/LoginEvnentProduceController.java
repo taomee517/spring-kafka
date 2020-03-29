@@ -3,6 +3,7 @@ package com.demo.kafka.controller;
 
 import com.demo.kafka.entity.dto.EventBusParallelPublishDTO;
 import com.demo.kafka.entity.dto.EventBusPublishDTO;
+import com.demo.kafka.entity.po.DeviceEventEnum;
 import com.demo.kafka.entity.po.EventBus;
 import com.demo.kafka.utils.ExcelReaderUtil;
 import io.swagger.annotations.Api;
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -70,7 +73,6 @@ public class LoginEvnentProduceController {
             String topic = dto.getTopic();
             EventBus bus = new EventBus();
             bus.setClientType(dto.getClientType());
-            bus.setEvent(dto.getEvent());
             List<String> imeis = ExcelReaderUtil.getColumnData(dto.getExcelFilePath());
             int deviceSize = imeis.size();
             CountDownLatch countDownLatch = new CountDownLatch(dto.getTotalCount());
@@ -84,7 +86,9 @@ public class LoginEvnentProduceController {
 
                     int bigTestIndex = latchIndex%deviceSize;
                     String imei = imeis.get(bigTestIndex);
+                    buildRandomEvent(bus, dto.getEvent());
                     bus.setImei(imei);
+                    bus.setTimestamp(System.currentTimeMillis());
                     ListenableFuture<SendResult> future = protoKafka.send(topic,bus);
 
                     countDownLatch.countDown();
@@ -112,6 +116,31 @@ public class LoginEvnentProduceController {
             }).start();
         } catch (Exception e) {
             log.error("生产消息发生异常:{}", e);
+        }
+    }
+
+
+    private void buildRandomEvent(EventBus bus, DeviceEventEnum srcEvent){
+        int randomIndex = new Random().nextInt(3);
+        DeviceEventEnum event =null;
+        switch (randomIndex){
+            case 0:
+                event = DeviceEventEnum.LOGIN;
+                break;
+            case 1:
+                event = DeviceEventEnum.LOGOUT;
+                break;
+            case 2:
+                event = DeviceEventEnum.HEART_BEAT;
+                break;
+            default:
+                break;
+        }
+
+        if (Objects.isNull(srcEvent)) {
+            bus.setEvent(event);
+        }else {
+            bus.setEvent(srcEvent);
         }
     }
 }
