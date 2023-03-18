@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Random;
 import java.util.concurrent.*;
 
 @Slf4j
@@ -81,7 +82,8 @@ public class DeviceProduceController {
                 log.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
                 return;
             }
-
+            int maxId = 3;
+            Random random = new Random();
             TopicEnum topicType = dto.getTopic();
             String topic = topicType.getTopic();
             Device device = new Device();
@@ -97,6 +99,7 @@ public class DeviceProduceController {
                     int intLatchCount = latchCount.intValue();
                     int index = dto.getPublishTimes() - intLatchCount + 1;
                     device.setParas(Integer.toString(index));
+                    device.setId(random.nextInt(maxId));
                     switch (serializingType){
                         case JSON:
                             future = jsonKafka.send(topic,device);
